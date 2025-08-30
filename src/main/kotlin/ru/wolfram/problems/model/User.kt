@@ -18,6 +18,10 @@ class UserDbo(
     @Column(name = "authorities", nullable = false)
     var authorities: String? = null,
 
+    @Convert(converter = StringSetConverter::class)
+    @Column(name = "solved_tasks", nullable = false, columnDefinition = "TEXT")
+    var solvedTasks: Set<String>? = null,
+
     @Column(name = "id", nullable = false)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,8 +32,24 @@ class UserDbo(
             username = username,
             password = password,
             authorities = authorities?.split(User.AUTHORITIES_SEPARATOR)
-                ?.map { role -> SimpleGrantedAuthority(role) }
+                ?.map { role -> SimpleGrantedAuthority(role) },
+            solvedTasks = solvedTasks
         )
+    }
+}
+
+@Converter
+class StringSetConverter : AttributeConverter<MutableSet<String?>?, String?> {
+    override fun convertToDatabaseColumn(stringList: MutableSet<String?>?): String {
+        return stringList?.joinToString(SPLIT_CHAR) ?: ""
+    }
+
+    override fun convertToEntityAttribute(string: String?): MutableSet<String?> {
+        return string?.split(SPLIT_CHAR)?.toMutableSet() ?: mutableSetOf()
+    }
+
+    companion object {
+        private const val SPLIT_CHAR = "@%@"
     }
 }
 
@@ -37,6 +57,7 @@ data class User(
     private val username: String? = null,
     private val password: String? = null,
     private val authorities: List<GrantedAuthority>? = null,
+    private val solvedTasks: Set<String>? = null,
 ) : UserDetails {
 
     override fun getAuthorities(): Collection<GrantedAuthority?> {
@@ -58,6 +79,8 @@ data class User(
             username, password,
             authorities?.toList()?.joinToString(separator = AUTHORITIES_SEPARATOR) { role ->
                 role.authority ?: throw NullAuthoritiesException()
-            })
+            },
+            solvedTasks = solvedTasks
+        )
     }
 }

@@ -32,3 +32,7 @@ replay_pid*
 build
 HELP.md
 /src/main/gen
+tasks/*/*.txt
+tasks/*/*.class
+tasks/*/*.java
+solutions
