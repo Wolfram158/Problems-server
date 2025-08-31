@@ -5,5 +5,4 @@ import org.springframework.stereotype.Repository
 import ru.wolfram.problems.model.TaskDbo
 
 @Repository
-interface TaskRepository: JpaRepository<TaskDbo, String> {
-}
+interface TaskRepository: JpaRepository<TaskDbo, String>

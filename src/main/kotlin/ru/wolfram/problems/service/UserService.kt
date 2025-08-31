@@ -31,7 +31,7 @@ class UserService(
         return userRepository.updateSolvedTasks(username, new)
     }
 
-    fun getSolvedTasks(username: String): Set<String> {
+    fun getSolvedTasks(username: String): Set<String>? {
         return userRepository.getSolvedTasks(username)
     }
 
@@ -51,7 +51,7 @@ class UserService(
                 username = user.username,
                 password = user.password,
                 authorities = user.authorities.toList(),
-                solvedTasks = setOf()
+                solvedTasks = null
             ).toUserDbo()
         )
 

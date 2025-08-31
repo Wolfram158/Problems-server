@@ -17,5 +17,5 @@ interface UserRepository: JpaRepository<UserDbo, Long> {
     fun updateSolvedTasks(username: String, new: Set<String>)
 
     @Query("select solvedTasks from UserDbo where username = :username")
-    fun getSolvedTasks(username: String): Set<String>
+    fun getSolvedTasks(username: String): Set<String>?
 }

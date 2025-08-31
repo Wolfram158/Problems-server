@@ -19,7 +19,7 @@ class UserDbo(
     var authorities: String? = null,
 
     @Convert(converter = StringSetConverter::class)
-    @Column(name = "solved_tasks", nullable = false, columnDefinition = "TEXT")
+    @Column(name = "solved_tasks", columnDefinition = "TEXT")
     var solvedTasks: Set<String>? = null,
 
     @Column(name = "id", nullable = false)
@@ -40,12 +40,12 @@ class UserDbo(
 
 @Converter
 class StringSetConverter : AttributeConverter<MutableSet<String?>?, String?> {
-    override fun convertToDatabaseColumn(stringList: MutableSet<String?>?): String {
-        return stringList?.joinToString(SPLIT_CHAR) ?: ""
+    override fun convertToDatabaseColumn(stringSet: MutableSet<String?>?): String? {
+        return stringSet?.joinToString(SPLIT_CHAR)
     }
 
-    override fun convertToEntityAttribute(string: String?): MutableSet<String?> {
-        return string?.split(SPLIT_CHAR)?.toMutableSet() ?: mutableSetOf()
+    override fun convertToEntityAttribute(string: String?): MutableSet<String?>? {
+        return string?.split(SPLIT_CHAR)?.toMutableSet()
     }
 
     companion object {

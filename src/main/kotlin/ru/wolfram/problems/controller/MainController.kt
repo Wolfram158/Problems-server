@@ -5,14 +5,11 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.*
 import ru.wolfram.problems.exception.NullTaskException
-import ru.wolfram.problems.extensions.Result
-import ru.wolfram.problems.extensions.runCommand
 import ru.wolfram.problems.model.Task
 import ru.wolfram.problems.model.TaskDbo
 import ru.wolfram.problems.model.User
 import ru.wolfram.problems.service.TaskService
 import ru.wolfram.problems.service.UserService
-import java.io.File
 import java.nio.file.Paths
 import kotlin.io.path.createParentDirectories
 import kotlin.io.path.writeText
@@ -63,38 +60,29 @@ class MainController(
         pathToSolution.writeText(solution.solution)
         when (solution.language.lowercase()) {
             "java" -> {
-                val compile =
-                    "javac $fileTaskName.java".runCommand(20, File("solutions/$username"))
-                when (compile) {
-                    is Result.Failure -> {
-                        return ResponseEntity.ok(compile.error)
-                    }
-                    else -> {}
-                }
-                task.input!!.forEachIndexed { index, test ->
-                    val lines = buildString {
-                        append("echo ")
-                        append(test.trim().split("\n").joinToString(separator = "&echo.&"))
-                    }
-                    val result =
-                        "cmd.exe /C $lines | java $fileTaskName.java".runCommand(20, File("solutions/$username"))
-                    when (result) {
-                        is Result.Success -> {
-                            if (result.result.trim() != task.output!![index].trim()) {
-                                return ResponseEntity.ok("Failed on test ${index + 1}!")
-                            }
-                        }
+                return solve(
+                    fileTaskName = fileTaskName,
+                    username = username,
+                    task = task,
+                    taskName = taskName,
+                    compiler = "javac",
+                    runner = "java",
+                    ext = "java",
+                    userService = userService
+                )
+            }
 
-                        is Result.Failure -> {
-                            return ResponseEntity.ok("Failed on test ${index + 1}!")
-                        }
-
-                        else -> {}
-                    }
-                }
-                val solvedTasks = userService.getSolvedTasks(username)
-                userService.updateSolvedTasks(username, solvedTasks + taskName)
-                return ResponseEntity.ok("Successfully passed all ${task.output!!.size} tests!")
+            "scala" -> {
+                return solve(
+                    fileTaskName = fileTaskName,
+                    username = username,
+                    task = task,
+                    taskName = taskName,
+                    compiler = "scalac",
+                    runner = "scala",
+                    ext = "scala",
+                    userService = userService
+                )
             }
 
             else -> {
