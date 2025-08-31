@@ -101,7 +101,7 @@ public class Main {
             long n
     ) {
         assert (n >= 0);
-        int size = mat.length;
+        final int size = mat.length;
         T[][] result = (T[][]) new Object[size][size];
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
@@ -112,16 +112,15 @@ public class Main {
                 }
             }
         }
-        T[][] a = (T[][]) new Object[mat.length][];
+        final T[][] a = (T[][]) new Object[mat.length][];
+        final T[][] clone = (T[][]) new Object[result.length][];
         clone2D(mat, a);
         while (n > 0) {
             if (n % 2 == 1) {
-                T[][] clone = (T[][]) new Object[result.length][];
                 clone2D(result, clone);
                 fillZeroes(result, zero);
                 multiply(a, clone, result, plus, mul, mod);
             }
-            T[][] clone = (T[][]) new Object[a.length][];
             clone2D(a, clone);
             fillZeroes(a, zero);
             multiply(clone, clone, a, plus, mul, mod);

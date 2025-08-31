@@ -11,7 +11,7 @@ class QuadraticPolynomial1 {
     private val mod = { x: Long -> x % 998244353 }
     private val toLong = { x: Long -> x }
 
-    private fun generateTest(p: Long? = null, q: Long? = null, n: Long? = null): Test {
+    fun generateTest(p: Long? = null, q: Long? = null, n: Long? = null): Test {
         val p = p ?: Random.nextLong()
         val q = q ?: Random.nextLong()
         val n = n ?: Random.nextLong()

@@ -1,5 +1,8 @@
 package ru.wolfram.problems.controller
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
@@ -21,6 +24,7 @@ class MainController(
     private val userService: UserService,
     private val taskService: TaskService
 ) {
+    private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
     @PostMapping("/register")
     fun register(@RequestBody user: User): ResponseEntity<String> {
@@ -60,7 +64,7 @@ class MainController(
         pathToSolution.writeText(solution.solution)
         when (solution.language.lowercase()) {
             "java" -> {
-                return solve(
+                return scope.solve(
                     fileTaskName = fileTaskName,
                     username = username,
                     task = task,
@@ -73,7 +77,7 @@ class MainController(
             }
 
             "scala" -> {
-                return solve(
+                return scope.solve(
                     fileTaskName = fileTaskName,
                     username = username,
                     task = task,
