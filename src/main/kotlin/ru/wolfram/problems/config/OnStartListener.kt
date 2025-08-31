@@ -3,6 +3,7 @@ package ru.wolfram.problems.config
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.ApplicationListener
 import org.springframework.context.annotation.Configuration
+import ru.wolfram.gen.quadratic_polynomial_1.QuadraticPolynomial1
 import ru.wolfram.problems.exception.DescriptionIsEmptyException
 import ru.wolfram.problems.model.TaskDbo
 import ru.wolfram.problems.service.TaskService
@@ -56,6 +57,6 @@ class OnStartListener(
         }
     }
 
-    private fun Path.getIO() = readText().split("-".repeat(10))
+    private fun Path.getIO() = readText().split(QuadraticPolynomial1.IO_SEPARATOR)
 
 }
