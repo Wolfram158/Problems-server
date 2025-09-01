@@ -49,16 +49,18 @@ public class Main {
         } else if (n.equals(neutral)) {
             return mul.apply(minusNeutral, p);
         } else {
+            p = mod.apply(p);
+            q = mod.apply(q);
             T[][] pow = (T[][]) new Object[2][2];
-            pow[0][0] = mul.apply(minusNeutral, p);
+            pow[0][0] = mod.apply(mul.apply(minusNeutral, p));
             pow[0][1] = neutral;
-            pow[1][0] = mul.apply(minusNeutral, q);
+            pow[1][0] = mod.apply(mul.apply(minusNeutral, q));
             pow[1][1] = zero;
             pow = pow(pow, zero, neutral, plus, mul, mod, toLong.apply(n) - 2);
             T[][] start = (T[][]) new Object[2][2];
-            start[0][0] = plus.apply(mul.apply(p, p), mul.apply(minusNeutral, mul.apply(two, q)));
-            start[0][1] = mul.apply(minusNeutral, p);
-            start[1][0] = mul.apply(minusNeutral, p);
+            start[0][0] = mod.apply(plus.apply(mod.apply(mul.apply(p, p)), mod.apply(mul.apply(minusNeutral, mod.apply(mul.apply(two, q))))));
+            start[0][1] = mod.apply(mul.apply(minusNeutral, p));
+            start[1][0] = mod.apply(mul.apply(minusNeutral, p));
             start[1][1] = two;
             final T[][] result = (T[][]) new Object[2][2];
             fillZeroes(result, zero);
