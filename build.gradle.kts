@@ -1,9 +1,14 @@
 plugins {
     kotlin("jvm") version "1.9.25"
     kotlin("plugin.spring") version "1.9.25"
+    id("application")
     id("org.springframework.boot") version "3.5.5"
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("plugin.jpa") version "1.9.25"
+}
+
+application {
+    mainClass = "ru.wolfram.problems.ProblemsApplication"
 }
 
 group = "ru.wolfram"
