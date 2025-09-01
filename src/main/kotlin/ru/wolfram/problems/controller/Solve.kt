@@ -30,39 +30,45 @@ fun CoroutineScope.solve(
 
         else -> {}
     }
-    val results = mutableListOf<Deferred<ResponseEntity<String>?>>()
-    task.input!!.forEachIndexed { index, test ->
-        val lines = buildString {
-            append("echo ")
-            append(test.trim().split("\n").joinToString(separator = "&echo.&"))
-        }
+    val results = mutableListOf<Deferred<MutableList<ResponseEntity<String>?>>>()
+    val step = 10
+    task.input!!.windowed(step, step, true).forEachIndexed { numOfGroup, group ->
         results.add(async {
-            val result =
-                "cmd.exe /C $lines | $runner $fileTaskName.$ext".runCommand(20, File("solutions/$username"))
-            return@async when (result) {
-                is Result.Success -> {
-                    if (result.result.trim() != task.output!![index].trim()) {
-                        ResponseEntity.ok("Failed on test ${index + 1}!")
-                    } else {
+            val subresults = mutableListOf<ResponseEntity<String>?>()
+            group.forEachIndexed { index, test ->
+                val lines = buildString {
+                    append("echo ")
+                    append(test.trim().split("\n").joinToString(separator = "&echo.&"))
+                }
+                val result =
+                    "cmd.exe /C $lines | $runner $fileTaskName.$ext".runCommand(20, File("solutions/$username"))
+                subresults.add(when (result) {
+                    is Result.Success -> {
+                        if (result.result.trim() != task.output!![numOfGroup * step + index].trim()) {
+                            ResponseEntity.ok("Failed on test ${numOfGroup * step + index + 1}!")
+                        } else {
+                            null
+                        }
+                    }
+
+                    is Result.Failure -> {
+                        ResponseEntity.ok("Failed on test ${numOfGroup * step + index + 1}! Error occurred:${System.lineSeparator()}${result.error}")
+                    }
+
+                    else -> {
                         null
                     }
-                }
-
-                is Result.Failure -> {
-                    ResponseEntity.ok("Failed on test ${index + 1}! Error occurred:${System.lineSeparator()}${result.error}")
-                }
-
-                else -> {
-                    null
-                }
+                })
             }
+            subresults
         })
     }
     val ret = runBlocking {
         for (result in results) {
-            val res = result.await()
-            if (res != null) {
-                return@runBlocking res
+            for (subresult in result.await()) {
+                if (subresult != null) {
+                    return@runBlocking subresult
+                }
             }
         }
         return@runBlocking null
