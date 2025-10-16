@@ -71,8 +71,24 @@ class MainController(
                     taskName = taskName,
                     compiler = "javac",
                     runner = "java",
-                    ext = "java",
+                    extCompile = "java",
+                    extRun = "java",
                     userService = userService
+                )
+            }
+
+            "kotlin" -> {
+                return scope.solve(
+                    fileTaskName = fileTaskName,
+                    username = username,
+                    task = task,
+                    taskName = taskName,
+                    compiler = "kotlinc -cp libs/kotlin-stdlib-2.2.20.jar",
+                    runner = "kotlin",
+                    extCompile = "kt",
+                    extRun = "class",
+                    userService = userService,
+                    suffix = "Kt"
                 )
             }
 
@@ -82,9 +98,52 @@ class MainController(
                     username = username,
                     task = task,
                     taskName = taskName,
-                    compiler = "scalac",
+                    compiler = "scala",
                     runner = "scala",
-                    ext = "scala",
+                    extCompile = "scala",
+                    extRun = "scala",
+                    userService = userService
+                )
+            }
+
+            "go", "golang" -> {
+                return scope.solve(
+                    fileTaskName = fileTaskName,
+                    username = username,
+                    task = task,
+                    taskName = taskName,
+                    compiler = "go run",
+                    runner = "go run",
+                    extCompile = "go",
+                    extRun = "go",
+                    userService = userService
+                )
+            }
+
+            "c++" -> {
+                return scope.solve(
+                    fileTaskName = fileTaskName,
+                    username = username,
+                    task = task,
+                    taskName = taskName,
+                    compiler = "g++ -o $taskName",
+                    runner = taskName,
+                    extCompile = "cpp",
+                    extRun = "",
+                    userService = userService
+                )
+            }
+
+            "c" -> {
+                return scope.solve(
+                    fileTaskName = fileTaskName,
+                    username = username,
+                    task = task,
+                    taskName = taskName,
+                    compiler = "g++ -o $taskName",
+                    runner = taskName,
+                    extCompile = "c",
+                    extRun = "",
                     userService = userService
                 )
             }

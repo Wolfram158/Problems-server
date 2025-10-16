@@ -18,11 +18,13 @@ fun CoroutineScope.solve(
     taskName: String,
     compiler: String,
     runner: String,
-    ext: String,
-    userService: UserService
+    extCompile: String,
+    extRun: String,
+    userService: UserService,
+    suffix: String = ""
 ): ResponseEntity<String> {
     val compile =
-        "$compiler $fileTaskName.$ext".runCommand(20, File("solutions/$username"))
+        "$compiler $fileTaskName.$extCompile".runCommand(20, File("solutions/$username"))
     when (compile) {
         is Result.Failure -> {
             return ResponseEntity.ok(compile.error)
@@ -41,24 +43,30 @@ fun CoroutineScope.solve(
                     append(test.trim().split("\n").joinToString(separator = "&echo.&"))
                 }
                 val result =
-                    "cmd.exe /C $lines | $runner $fileTaskName.$ext".runCommand(20, File("solutions/$username"))
-                subresults.add(when (result) {
-                    is Result.Success -> {
-                        if (result.result.trim() != task.output!![numOfGroup * step + index].trim()) {
-                            ResponseEntity.ok("Failed on test ${numOfGroup * step + index + 1}!")
-                        } else {
+                    if (extRun.isNotBlank()) {
+                        "cmd.exe /C $lines | $runner $fileTaskName$suffix.$extRun".runCommand(20, File("solutions/$username"))
+                    } else {
+                        "cmd.exe /C $lines | $runner".runCommand(20, File("solutions/$username"))
+                    }
+                subresults.add(
+                    when (result) {
+                        is Result.Success -> {
+                            if (result.result.trim() != task.output!![numOfGroup * step + index].trim()) {
+                                ResponseEntity.ok("Failed on test ${numOfGroup * step + index + 1}!")
+                            } else {
+                                null
+                            }
+                        }
+
+                        is Result.Failure -> {
+                            ResponseEntity.ok("Failed on test ${numOfGroup * step + index + 1}! Error occurred:${System.lineSeparator()}${result.error}")
+                        }
+
+                        else -> {
                             null
                         }
                     }
-
-                    is Result.Failure -> {
-                        ResponseEntity.ok("Failed on test ${numOfGroup * step + index + 1}! Error occurred:${System.lineSeparator()}${result.error}")
-                    }
-
-                    else -> {
-                        null
-                    }
-                })
+                )
             }
             subresults
         })

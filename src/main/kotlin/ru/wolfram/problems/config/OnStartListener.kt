@@ -15,7 +15,7 @@ import kotlin.io.path.readText
 
 @Configuration
 class OnStartListener(
-    private var taskService: TaskService
+    private val taskService: TaskService
 ) : ApplicationListener<ApplicationReadyEvent> {
 
     override fun onApplicationEvent(event: ApplicationReadyEvent) {
