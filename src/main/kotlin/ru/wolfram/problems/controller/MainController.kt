@@ -57,8 +57,8 @@ class MainController(
         val username =
             (SecurityContextHolder.getContext().authentication?.principal as? UserDetails)?.username
                 ?: return ResponseEntity.ok("Who are you?")
-        val task = taskService.getTaskByName(taskName).getOrElse { throw NullTaskException() }
-        val fileTaskName = taskName.replace(" ", "_")
+        val task = taskService.getTaskByName(taskName.replace("%20", " ")).getOrElse { throw NullTaskException() }
+        val fileTaskName = taskName.replace("%20", "_")
         val pathToSolution = Paths.get("solutions/$username/$fileTaskName.java")
         pathToSolution.createParentDirectories()
         pathToSolution.writeText(solution.solution)

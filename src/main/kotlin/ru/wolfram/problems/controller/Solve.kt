@@ -44,7 +44,10 @@ fun CoroutineScope.solve(
                 }
                 val result =
                     if (extRun.isNotBlank()) {
-                        "cmd.exe /C $lines | $runner $fileTaskName$suffix.$extRun".runCommand(20, File("solutions/$username"))
+                        "cmd.exe /C $lines | $runner $fileTaskName$suffix.$extRun".runCommand(
+                            20,
+                            File("solutions/$username")
+                        )
                     } else {
                         "cmd.exe /C $lines | $runner".runCommand(20, File("solutions/$username"))
                     }
